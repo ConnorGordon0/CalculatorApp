@@ -10,7 +10,7 @@ import UIKit
 
 class ViewController: UIViewController
 {
-
+ // Gay gay gay gay
     override func viewDidLoad()
     {
         super.viewDidLoad()
