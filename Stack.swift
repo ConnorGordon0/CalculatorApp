@@ -10,12 +10,21 @@ import UIKit
 struct Stack<T> {
     
     var stackArray: [T] //Array to hold
-    var arrayIndex: Int = 0
+    var arrayIndex: Int = -1
     
     
     init(){
+        
         stackArray = []
     }
+    
+    //Function to clear the current stack's contents, and reset the arrayIndex
+    mutating func clearStack()
+    {
+        self.stackArray.removeAll()
+        self.arrayIndex = -1
+    }
+    
     
     
     /* Function to return if the Stack is Empty
@@ -24,7 +33,7 @@ struct Stack<T> {
      */
     func isEmptyStack() -> Bool {
         
-        return (arrayIndex == 0)
+        return (self.arrayIndex == -1)
     }
     
     
@@ -37,7 +46,7 @@ struct Stack<T> {
         
         if(!self.isEmptyStack())
         {
-            return stackArray[arrayIndex]
+            return self.stackArray[arrayIndex]
         }
         else
         {
