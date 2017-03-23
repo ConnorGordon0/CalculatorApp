@@ -8,8 +8,8 @@
 
 import UIKit
 
-class ViewController: UIViewController {
-
+class ViewController: UIViewController
+{
     @IBOutlet weak var calculatorDisplay: UILabel!
     
     //Button connections
@@ -24,31 +24,34 @@ class ViewController: UIViewController {
     @IBOutlet weak var ACButton: UIButton!
     @IBOutlet weak var rightParen: UIButton!
     @IBOutlet weak var leftParen: UIButton!
+    @IBOutlet weak var swapSign: UIButton!
     
-    var numberStack = Stack<Double>() //stack variable to hold all numbers
-    var operatorStack = Stack<Character>() //stack variable to hold all operators, plus '('
+    var numberStack   = Stack<Double>()    // stack variable to hold all numbers
+    var operatorStack = Stack<Character>() // stack variable to hold all operators, plus '('
+    var calculatedvalue: Double = 0.0      // Stores calculated value
+    var repeatMath: Bool = false           // Bool for "=" button to repeat math
     
-    typealias binops = (Double, Double)->Double //for doMath
+    typealias binops = (Double, Double)->Double // for doMath
     var ops: [String:binops] = [:]
     
-    //boolean variables to manage showing numbers to the display at appropriate times
-    var didPrecedence = false
-    var shouldClear = false
-    var decimalPressed = false //true when the decimal button is pressed
-    var consecutive_r_paren = false //true when the right paren is pressed twice at evaluation
+    // boolean variables to manage showing numbers to the display at appropriate times
+    var didPrecedence       = false
+    var shouldClear         = false
+    var decimalPressed      = false // true when the decimal button is pressed
+    var consecutive_r_paren = false // true when the right paren is pressed twice at evaluation
     
+    var parenOnStack = 0 // keeps track of the number of left parenthesis are on the operatorStack
+    var lastOpPopped: Character = Character.init("$") // init character is arbitrary
+    var lastValue: Double = 0.0
     
-    var parenOnStack = 0 //keeps track of the number of left parenthesis are on the operatorStack
-    var lastOpPopped: Character = Character.init("$") //init character is arbitrary
-    
-    // -------------------------------------- Helping Functions -------------------------------------------------//
+    //--------------------------- Helping Functions -----------------------------//
     
     /* disableButton(args: UIButton ...)
      * Function to enable/disable the buttons presented to it
      * If toggleEnable is true, all the buttons will be enabled. Otherwise, they will all be disabled
      * NOTE: Any amount of parameters may be passed to disableButton, as long as they are of type UIButton
-     *
-    */
+     */
+    //----------------------------------------------------------------------------------------------------
     func disableButton(toggleEnable: Bool, args: UIButton...)
     {
         for localButton: UIButton in args //go through arguments presented to function
@@ -57,14 +60,15 @@ class ViewController: UIViewController {
         }
     }
     
-    
-    //The following two functions (disableOperators and enableOperators) are just presets for convenience
+    // The following two functions (disableOperators and enableOperators) are just presets for convenience
+    //----------------------------------------------------------------------------------------------------
     func disableOperators()
     {
         disableButton(toggleEnable: false, args: plusButton, minusButton, divideButton, multiplyButton,
                       equalButton)
     }
     
+    //----------------------------------------------------------------------------------------------------
     func enableOperators()
     {
         disableButton(toggleEnable: true, args: plusButton, minusButton, divideButton, multiplyButton,
@@ -77,6 +81,7 @@ class ViewController: UIViewController {
      * If op1 has greater precedence than op2, true is returned
      * If op2 has greater than or equal precedence than op1, false is returned
      */
+    //----------------------------------------------------------------------------------------------------
     func precedence(_ op1: Character, _ op2: Character) -> Bool
     {
         if((op1 == "(") && (op2 != "("))
@@ -100,11 +105,11 @@ class ViewController: UIViewController {
         }
     }
     
-    
     /*
      * isOperator(Char) -> Bool
      * Function to return true if the parameter passed is == *,/,+, or -. False otherwise
      */
+    //----------------------------------------------------------------------------------------------------
     func isOperator(_ localChar: Character) -> Bool
     {
         var localReturn: Bool = true
@@ -122,14 +127,13 @@ class ViewController: UIViewController {
         
         return localReturn
     }
- 
-    
     
     /*
      * getDisplayNumber() -> Double?
      * function to interperet the calculator's display as an integer, and returns it
      * If it can't be interpreted as an Int, nil is returned
      */
+    //----------------------------------------------------------------------------------------------------
     func getDisplayNumber() -> Double?
     {
         let interpret = Double(calculatorDisplay.text!)
@@ -137,13 +141,11 @@ class ViewController: UIViewController {
     }
     
     //Function to update the calculator's display to the toSend parameter
+    //----------------------------------------------------------------------------------------------------
     func sendToDisplay(_ toSend: String)
     {
         calculatorDisplay.text = toSend
     }
-   
-    
-    //var opFunc = ops["+"]
     
     // Addition Function
     //-----------------------------------------------------
@@ -170,12 +172,19 @@ class ViewController: UIViewController {
     //-----------------------------------------------------
     func div(_ a:Double,_ b:Double) -> Double
     {
-        return a / b
+        if b == 0
+        {
+            print("Error: Cannot Divide by 0. Setting display value to 0")
+            return 0 // If the user decides to be cute and divide by 0.
+        }
+        else
+        {
+            return a / b
+        }
     }
     
-    
-    
     // Calculation Function that does the operations
+    //----------------------------------------------------------------------------------------------------
     func doMath(_ a:Double,_ b:Double,_ op:Character)-> Double
     {
        print("Doing Math: ", a, " ", op, " ", b)
@@ -183,35 +192,31 @@ class ViewController: UIViewController {
        return opFunc!(a,b)
     }
     
+    // -------------------------- IBAction Functions --------------------------//
     
-    
-    // --------------------------------- IBAction Functions ----------------------------------------------------//
-    
-     //Function that gets triggered when 0-9 are pressed
+    // Function that gets triggered when 0-9 are pressed
+    //----------------------------------------------------------------------------------------------------
     @IBAction func numberPressed(_ sender: UIButton)
     {
-        
-        //If the last operator updated the display by itself
+        // If the last operator updated the display by itself
         if((didPrecedence || shouldClear) && !decimalPressed)
         {
             shouldClear = false
             print("resetting display in numberPressed")
             sendToDisplay("")
         }
-       //add the corresponding number to the display on the calculator
+       // add the corresponding number to the display on the calculator
         
        calculatorDisplay.text = calculatorDisplay.text?.appending(sender.currentTitle!)
         
        disableButton(toggleEnable: false, args: leftParen)
        enableOperators()
         
-        
-        if(parenOnStack > 0) //so you can have stuff like 10 * (50)
+        if(parenOnStack > 0) // so you can have stuff like 10 * (50)
         {
             print("Enabling right paren in numberPressed")
             disableButton(toggleEnable: true, args: rightParen)
         }
-        
     }
     
     /*
@@ -219,19 +224,20 @@ class ViewController: UIViewController {
      *  Function that is triggered when *,-,+, or / is pressed on the calculator
      *
      */
-    @IBAction func operatorPressed(_ sender: UIButton) {
-        
+    //----------------------------------------------------------------------------------------------------
+    @IBAction func operatorPressed(_ sender: UIButton)
+    {
         let localOp = Character(sender.currentTitle!)
-        let object = getDisplayNumber()! //the Double representation of what is on the Calculator Display
+        let object = getDisplayNumber()! // the Double representation of what is on the Calculator Display
         
-        decimalPressed = false //reset decimal bool flag
+        decimalPressed = false // reset decimal bool flag
         disableButton(toggleEnable: true, args: decimalButton)
         
-        disableButton(toggleEnable: true, args: leftParen) //enable parenthetical expressions
+        disableButton(toggleEnable: true, args: leftParen) // enable parenthetical expressions
         disableButton(toggleEnable: false, args: rightParen)
         
         
-        //first, send whatever number is on the display(if any) to the number stack
+        // first, send whatever number is on the display(if any) to the number stack
         if(!didPrecedence && !consecutive_r_paren)
         {
             numberStack.Push(pushObject: object)
@@ -294,46 +300,94 @@ class ViewController: UIViewController {
                 shouldClear = true
             }
             
-            
             ACButton.setTitle("C", for: .normal)
             
             //disable/enable appropriate buttons
             disableOperators()
-            
         }
-       
+    }
+
+    // Equals Function that gets called when the "=" button is pressed. 
+    // It is called within the equalsPressed Function. This function will 
+    // make the remaining calculation that is being held within the numberStack and
+    // the operatorStack.
+    //
+    // The commented section is the prototype code for if Equals is pressed continually
+    // Which should continually do the last known operation each time. 
+    //----------------------------------------------------------------------------------------------------
+    func equalOut()
+    {
+        /*
+        if repeatMath
+        {
+            print("Repeat Math Called", repeatMath)
+            calculatedvalue = numberStack.Pop()!
+            calculatedvalue = doMath(calculatedvalue, lastValue, lastOpPopped)
+            sendToDisplay(String(calculatedvalue)) // Updates the display with the new correct value
+        }*/
+        if operatorStack.isEmptyStack()
+        {
+            return
+        }
+        else
+        {
+            let object    = getDisplayNumber()!  // The Double representation of what is on the Calculator Display
+            numberStack.Push(pushObject: object)
+            lastValue     = numberStack.Pop()!   // Pops the Last known number value on the stack
+            lastOpPopped  = operatorStack.Pop()! // Pops the last known Operator on the stack
+            print("Last Popped Operator = ", lastOpPopped)
+            
+            
+            print("lastOpPopped = ", lastOpPopped)
+            print("Numberstack last position = ",numberStack.Peek()!)
+            
+            if !numberStack.isEmptyStack()
+            {
+                calculatedvalue = doMath(numberStack.Pop()!, lastValue, lastOpPopped) // Calculates the current value
+                numberStack.Push(pushObject: calculatedvalue)         // Pushes that current value back onto the stack
+                //operatorStack.Push(pushObject: lastOpPopped)          // Pushes the last used operator onto the stack
+                
+                sendToDisplay(String(calculatedvalue)) // Updates the display with the new correct value
+                repeatMath = true
+            }
+        }
     }
     
-    
-    //*****TO DO******//
-    @IBAction func equalsPressed(_ sender: UIButton) {
+    // The button caller for the "=" button. This button action will call the function equalOut()
+    //----------------------------------------------------------------------------------------------------
+    @IBAction func equalsPressed(_ sender: UIButton)
+    {
+        print("equals Pressed")
+        equalOut()
     }
     
-    
-    
-    @IBAction func decimalPoint(_ sender: UIButton) {
-        
+    //----------------------------------------------------------------------------------------------------
+    @IBAction func decimalPoint(_ sender: UIButton)
+    {
         decimalPressed = true
         disableOperators()
         disableButton(toggleEnable: false, args: decimalButton, rightParen, leftParen)
         
         calculatorDisplay.text = calculatorDisplay.text?.appending(".") //append a dot to Calculator display
-        
     }
     
-    
-    
-    //******TO DO********//
-    @IBAction func negative(_ sender: UIButton) {
+    // This function will swap the sign of th ecurrent number 
+    // displayed onto the screen and will either make it positive 
+    // or negative depending on the current value. This will be done
+    // through multiplication instead of tacking on a negative like 
+    // object = -object.
+    //----------------------------------------------------------------------------------------------------
+    @IBAction func negative(_ sender: UIButton)
+    {
+        var object    = getDisplayNumber()! // The Double representation of what is on the Calculator Display
+        object = mult(-1.0, object)         // Multiply the current value by -1.0
+        sendToDisplay(String(object))       // Update Display with new value
     }
     
-    
-    
-    
-    
-    //When the clear button is pressed
-    @IBAction func clearButton(_ sender: UIButton) {
-        
+    // When the clear button is pressed
+    //----------------------------------------------------------------------------------------------------
+    @IBAction func clearButton(_ sender: UIButton)
+    {
         print("Clear button pressed")
         
         if(ACButton.currentTitle == "C") //Just clear the display
@@ -357,8 +411,8 @@ class ViewController: UIViewController {
         }
     }
     
-    
-    //Function that gets called when either the '(' button or ')' button is pressed
+    // Function that gets called when either the '(' button or ')' button is pressed
+    //----------------------------------------------------------------------------------------------------
     @IBAction func parenthesisPressed(_ sender: UIButton)
     {
         if(sender.currentTitle == "(") //left parenthesis pressed
@@ -387,7 +441,7 @@ class ViewController: UIViewController {
             {                                  //inside parenthesis
                 
                 let secondNumber = numberStack.Pop()!
-                let firstNumber = numberStack.Pop()!
+                let firstNumber  = numberStack.Pop()!
                 
                 lastOpPopped = operatorStack.Pop()!
                 numberStack.Push(pushObject: doMath(firstNumber, secondNumber, lastOpPopped))
@@ -412,15 +466,12 @@ class ViewController: UIViewController {
             
             print("Number of l_paren on stack:", parenOnStack)
             consecutive_r_paren = true
-            
-            
         }
     }
     
-    
-    
-    //-----------------------------------------------------
-    override func viewDidLoad() {
+    //----------------------------------------------------------------------------------------------------
+    override func viewDidLoad()
+    {
         print("Calling viewDidLoad")
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -445,17 +496,20 @@ class ViewController: UIViewController {
         
         disableButton(toggleEnable: false, args: plusButton, minusButton, divideButton, multiplyButton,
                                                  equalButton, rightParen)
-        
     }
     
-    override func loadView() {
+    //----------------------------------------------------------------------------------------------------
+    override func loadView()
+    {
         super.loadView()
         
         ops = ["+": add,"-": sub, "*": mult, "/": div]
         
     }
-
-    override func didReceiveMemoryWarning() {
+    
+    //----------------------------------------------------------------------------------------------------
+    override func didReceiveMemoryWarning()
+    {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }

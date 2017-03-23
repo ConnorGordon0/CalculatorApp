@@ -174,7 +174,6 @@
                                     <color key="titleShadowColor" red="0.38878751446241611" green="0.73197433445354787" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 </state>
                                 <connections>
-                                    <action selector="negative:" destination="BYZ-38-t0r" eventType="touchUpInside" id="lyf-fW-A8q"/>
                                     <action selector="parenthesisPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Bhx-C2-mXk"/>
                                 </connections>
                             </button>
@@ -188,7 +187,6 @@
                                     <color key="titleShadowColor" red="0.38878751449999999" green="0.73197433450000005" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 </state>
                                 <connections>
-                                    <action selector="negative:" destination="BYZ-38-t0r" eventType="touchUpInside" id="i63-vr-5fg"/>
                                     <action selector="parenthesisPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="WOl-fd-bxS"/>
                                 </connections>
                             </button>
@@ -228,7 +226,7 @@
                                     <color key="titleShadowColor" red="0.67494320949999997" green="0.72458341010000005" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 </state>
                                 <connections>
-                                    <action selector="operatorPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ufL-3k-UrV"/>
+                                    <action selector="negative:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mYy-qB-xjy"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GPc-LP-nIN" userLabel="Minus_Button">
@@ -303,19 +301,20 @@
                         <outlet property="calculatorDisplay" destination="Dvt-yh-Tqa" id="Va2-zR-Oni"/>
                         <outlet property="decimalButton" destination="e7P-S3-3SC" id="qit-34-25N"/>
                         <outlet property="divideButton" destination="48E-lP-uag" id="Omc-1h-d1h"/>
-                        <outlet property="equalButton" destination="sXM-8u-9ZT" id="biZ-Z9-58C"/>
+                        <outlet property="equalButton" destination="sXM-8u-9ZT" id="80q-Ef-ttZ"/>
                         <outlet property="leftParen" destination="T8w-IB-Dsb" id="8Oo-Qt-SF5"/>
                         <outlet property="minusButton" destination="GPc-LP-nIN" id="UFN-NI-B5o"/>
                         <outlet property="modButton" destination="3dQ-kj-APn" id="JmM-jM-Pf5"/>
                         <outlet property="multiplyButton" destination="aSX-B6-RXg" id="MA6-Go-RdD"/>
                         <outlet property="plusButton" destination="bES-IY-1Wh" id="fgx-pR-cg9"/>
                         <outlet property="rightParen" destination="3dQ-kj-APn" id="K7E-D5-Jlu"/>
+                        <outlet property="swapSign" destination="BqP-wh-hWp" id="6I9-RB-pO4"/>
                         <outlet property="zeroButton" destination="Aiu-S8-TZl" id="5tB-MQ-6I4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="213.59999999999999" y="17.541229385307346"/>
+            <point key="canvasLocation" x="236" y="-27"/>
         </scene>
     </scenes>
 </document>

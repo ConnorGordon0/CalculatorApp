@@ -54,8 +54,6 @@ struct Stack<T> {
         }
     }
     
-    
-    
     /*Function to push an object of type T to stack
      * Pre-condition: None
      * Post-condition: pushObject is pushed onto stack.
